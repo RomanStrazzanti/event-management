@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+    <h1>Connexion</h1>
+
+    {% if error %}
+        <div class="alert alert-danger">Email ou mot de passe incorrect</div>
+    {% endif %}
+
+    <form method="post">
+        <label>Email :</label>
+        <input type="email" name="email" required value="{{ last_username|default('') }}">
+        
+        <label>Mot de passe :</label>
+        <input type="password" name="password" required>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button type="submit">Se connecter</button>
+    </form>
+{% endblock %}

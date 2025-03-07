@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Tableau de bord</h1>
+    
+    <!-- Statistiques -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white p-3">
+                <h4>Clients</h4>
+                <h2>{{ client_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white p-3">
+                <h4>Événements</h4>
+                <h2>{{ event_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white p-3">
+                <h4>Factures</h4>
+                <h2>{{ invoice_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white p-3">
+                <h4>Tâches</h4>
+                <h2>{{ task_count }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphiques -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <canvas id="chartClients"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="chartInvoices"></canvas>
+        </div>
+    </div>
+
+    <!-- Calendrier -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <!-- Derniers ajouts -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Derniers Clients</h3>
+            <ul class="list-group">
+                {% for client in recent_clients %}
+                    <li class="list-group-item">{{ client.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3>Derniers Événements</h3>
+            <ul class="list-group">
+                {% for event in recent_events %}
+                    <li class="list-group-item">{{ event.eventName }} - {{ event.date|date('d/m/Y') }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configuration des graphiques
+        new Chart(document.getElementById('chartClients'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Clients actifs', 'Clients inactifs'],
+                datasets: [{
+                    data: [{{ client_count }}, 10], // Remplace 10 par le nombre réel
+                    backgroundColor: ['#4CAF50', '#FFC107']
+                }]
+            }
+        });
+
+        new Chart(document.getElementById('chartInvoices'), {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai'],
+                datasets: [{
+                    label: 'Factures émises',
+                    data: [5, 10, 3, 8, 12], // Remplace avec des données réelles
+                    backgroundColor: '#FF5733'
+                }]
+            }
+        });
+
+        // Configuration du calendrier
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: [
+                {% for event in recent_events %}
+                {
+                    title: '{{ event.eventName }}',
+                    start: '{{ event.date|date('Y-m-d') }}'
+                },
+                {% endfor %}
+            ]
+        });
+        calendar.render();
+    });
+</script>
+
+{% endblock %}

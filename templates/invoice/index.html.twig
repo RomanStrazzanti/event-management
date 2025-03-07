@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des Factures</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Événement</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+                <tr>
+                    <td>{{ invoice.id }}</td>
+                    <td>{{ invoice.event.eventName }}</td>  <!-- Accès à l'attribut 'name' de l'événement -->
+                    <td>{{ invoice.amount }} €</td>
+                    <td>{{ invoice.status }}</td>
+                    <td>
+                        <a href="{{ path('invoice_edit', {'id': invoice.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <form action="{{ path('invoice_delete', {'id': invoice.id}) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucune facture trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('invoice_create') }}" class="btn btn-primary">Ajouter une Facture</a>
+{% endblock %}

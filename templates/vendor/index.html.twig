@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des Fournisseurs</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Type de Service</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendors %}
+                <tr>
+                    <td>{{ vendor.id }}</td>
+                    <td>{{ vendor.name }}</td>
+                    <td>{{ vendor.serviceType }}</td>
+                    <td>{{ vendor.cost }} €</td>
+                    <td>
+                        <a href="{{ path('vendor_edit', {'id': vendor.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <form action="{{ path('vendor_delete', {'id': vendor.id}) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucun fournisseur trouvé.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('vendor_create') }}" class="btn btn-primary">Ajouter un Fournisseur</a>
+{% endblock %}
