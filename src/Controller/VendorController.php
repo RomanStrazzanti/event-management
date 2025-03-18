@@ -4,24 +4,26 @@ namespace App\Controller;
 
 use App\Entity\Vendor;
 use App\Form\VendorType;
+use App\Repository\VendorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/vendor')]
-class VendorController extends AbstractController
+final class VendorController extends AbstractController
 {
-    #[Route('/', name: 'vendor_list', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    #[Route(name: 'app_vendor_index', methods: ['GET'])]
+    public function index(VendorRepository $vendorRepository): Response
     {
-        $vendors = $entityManager->getRepository(Vendor::class)->findAll();
-        return $this->render('vendor/index.html.twig', ['vendors' => $vendors]);
+        return $this->render('vendor/index.html.twig', [
+            'vendors' => $vendorRepository->findAll(),
+        ]);
     }
 
-    #[Route('/create', name: 'vendor_create', methods: ['GET', 'POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new', name: 'app_vendor_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $vendor = new Vendor();
         $form = $this->createForm(VendorType::class, $vendor);
@@ -30,13 +32,25 @@ class VendorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($vendor);
             $entityManager->flush();
-            return $this->redirectToRoute('vendor_list');
+
+            return $this->redirectToRoute('app_vendor_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('vendor/create.html.twig', ['form' => $form->createView()]);
+        return $this->render('vendor/new.html.twig', [
+            'vendor' => $vendor,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/edit/{id}', name: 'vendor_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}', name: 'app_vendor_show', methods: ['GET'])]
+    public function show(Vendor $vendor): Response
+    {
+        return $this->render('vendor/show.html.twig', [
+            'vendor' => $vendor,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_vendor_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Vendor $vendor, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(VendorType::class, $vendor);
@@ -44,20 +58,24 @@ class VendorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            return $this->redirectToRoute('vendor_list');
+
+            return $this->redirectToRoute('app_vendor_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('vendor/edit.html.twig', ['form' => $form->createView()]);
+        return $this->render('vendor/edit.html.twig', [
+            'vendor' => $vendor,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/delete/{id}', name: 'vendor_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_vendor_delete', methods: ['POST'])]
     public function delete(Request $request, Vendor $vendor, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$vendor->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$vendor->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($vendor);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('vendor_list');
+        return $this->redirectToRoute('app_vendor_index', [], Response::HTTP_SEE_OTHER);
     }
 }

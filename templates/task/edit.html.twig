@@ -1,10 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <h1>Modifier la Tâche</h1>
+{% block title %}Edit Task{% endblock %}
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
-    {{ form_end(form) }}
+{% block body %}
+    <h1>Edit Task</h1>
+
+    {{ include('task/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_task_index') }}">back to list</a>
+
+    {{ include('task/_delete_form.html.twig') }}
 {% endblock %}

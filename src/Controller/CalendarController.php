@@ -4,24 +4,26 @@ namespace App\Controller;
 
 use App\Entity\Calendar;
 use App\Form\CalendarType;
+use App\Repository\CalendarRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/calendar')]
-class CalendarController extends AbstractController
+final class CalendarController extends AbstractController
 {
-    #[Route('/', name: 'calendar_list', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response
+    #[Route(name: 'app_calendar_index', methods: ['GET'])]
+    public function index(CalendarRepository $calendarRepository): Response
     {
-        $calendars = $entityManager->getRepository(Calendar::class)->findAll();
-        return $this->render('calendar/index.html.twig', ['calendars' => $calendars]);
+        return $this->render('calendar/index.html.twig', [
+            'calendars' => $calendarRepository->findAll(),
+        ]);
     }
 
-    #[Route('/create', name: 'calendar_create', methods: ['GET', 'POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new', name: 'app_calendar_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $calendar = new Calendar();
         $form = $this->createForm(CalendarType::class, $calendar);
@@ -30,13 +32,25 @@ class CalendarController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($calendar);
             $entityManager->flush();
-            return $this->redirectToRoute('calendar_list');
+
+            return $this->redirectToRoute('app_calendar_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('calendar/create.html.twig', ['form' => $form->createView()]);
+        return $this->render('calendar/new.html.twig', [
+            'calendar' => $calendar,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/edit/{id}', name: 'calendar_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}', name: 'app_calendar_show', methods: ['GET'])]
+    public function show(Calendar $calendar): Response
+    {
+        return $this->render('calendar/show.html.twig', [
+            'calendar' => $calendar,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_calendar_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Calendar $calendar, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CalendarType::class, $calendar);
@@ -44,20 +58,24 @@ class CalendarController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            return $this->redirectToRoute('calendar_list');
+
+            return $this->redirectToRoute('app_calendar_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('calendar/edit.html.twig', ['form' => $form->createView()]);
+        return $this->render('calendar/edit.html.twig', [
+            'calendar' => $calendar,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/delete/{id}', name: 'calendar_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_calendar_delete', methods: ['POST'])]
     public function delete(Request $request, Calendar $calendar, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$calendar->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$calendar->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($calendar);
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('calendar_list');
+        return $this->redirectToRoute('app_calendar_index', [], Response::HTTP_SEE_OTHER);
     }
 }

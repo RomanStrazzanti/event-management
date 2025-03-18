@@ -4,73 +4,78 @@ namespace App\Controller;
 
 use App\Entity\Client;
 use App\Form\ClientType;
+use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/client')]
-class ClientController extends AbstractController
+final class ClientController extends AbstractController
 {
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    #[Route(name: 'app_client_index', methods: ['GET'])]
+    public function index(ClientRepository $clientRepository): Response
     {
-        $this->entityManager = $entityManager;
+        return $this->render('client/index.html.twig', [
+            'clients' => $clientRepository->findAll(),
+        ]);
     }
 
-    #[Route('/new', name: 'client_new')]
-    public function new(Request $request): Response
+    #[Route('/new', name: 'app_client_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $client = new Client();
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($client);
-            $this->entityManager->flush();
+            $entityManager->persist($client);
+            $entityManager->flush();
 
-            return $this->redirectToRoute('client_list'); // Assurez-vous que cette route existe
+            return $this->redirectToRoute('app_client_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('client/new.html.twig', [
-            'form' => $form->createView(),
+            'client' => $client,
+            'form' => $form,
         ]);
     }
 
-    #[Route('/', name: 'client_list')]
-    public function index(): Response
+    #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
+    public function show(Client $client): Response
     {
-        $clients = $this->entityManager->getRepository(Client::class)->findAll();
-
-        return $this->render('client/index.html.twig', [
-            'clients' => $clients,
+        return $this->render('client/show.html.twig', [
+            'client' => $client,
         ]);
     }
 
-    #[Route('/edit/{id}', name: 'client_edit')]
-    public function edit(Request $request, Client $client): Response
+    #[Route('/{id}/edit', name: 'app_client_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
-            return $this->redirectToRoute('client_list');
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_client_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('client/edit.html.twig', [
-            'form' => $form->createView(),
+            'client' => $client,
+            'form' => $form,
         ]);
     }
 
-    #[Route('/delete/{id}', name: 'client_delete', methods: ['POST'])]
-    public function delete(Client $client): Response
+    #[Route('/{id}', name: 'app_client_delete', methods: ['POST'])]
+    public function delete(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
-        $this->entityManager->remove($client);
-        $this->entityManager->flush();
+        if ($this->isCsrfTokenValid('delete'.$client->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($client);
+            $entityManager->flush();
+        }
 
-        return $this->redirectToRoute('client_list');
+        return $this->redirectToRoute('app_client_index', [], Response::HTTP_SEE_OTHER);
     }
 }

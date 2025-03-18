@@ -1,40 +1,39 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Client index{% endblock %}
+
 {% block body %}
-    <h1>Liste des clients</h1>
+    <h1>Client index</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nom</th>
+                <th>Id</th>
+                <th>Name</th>
                 <th>Email</th>
-                <th>Téléphone</th>
-                <th>Actions</th>
+                <th>Phone</th>
+                <th>actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for client in clients %}
-                <tr>
-                    <td>{{ client.id }}</td>
-                    <td>{{ client.name }}</td>
-                    <td>{{ client.email }}</td>
-                    <td>{{ client.phone }}</td>
-                    <td>
-                        <a href="{{ path('client_edit', {'id': client.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                        <form action="{{ path('client_delete', {'id': client.id}) }}" method="post" style="display:inline;">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                        </form>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="5">Aucun client trouvé.</td>
-                </tr>
-            {% endfor %}
+        {% for client in clients %}
+            <tr>
+                <td>{{ client.id }}</td>
+                <td>{{ client.name }}</td>
+                <td>{{ client.email }}</td>
+                <td>{{ client.phone }}</td>
+                <td>
+                    <a href="{{ path('app_client_show', {'id': client.id}) }}">show</a>
+                    <a href="{{ path('app_client_edit', {'id': client.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('client_new') }}" class="btn btn-primary">Ajouter un client</a>
+    <a href="{{ path('app_client_new') }}">Create new</a>
 {% endblock %}

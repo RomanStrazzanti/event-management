@@ -1,39 +1,39 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Vendor index{% endblock %}
+
 {% block body %}
-    <h1>Liste des Fournisseurs</h1>
+    <h1>Vendor index</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nom</th>
-                <th>Type de Service</th>
-                <th>Actions</th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>ServiceType</th>
+                <th>Cost</th>
+                <th>actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for vendor in vendors %}
-                <tr>
-                    <td>{{ vendor.id }}</td>
-                    <td>{{ vendor.name }}</td>
-                    <td>{{ vendor.serviceType }}</td>
-                    <td>{{ vendor.cost }} €</td>
-                    <td>
-                        <a href="{{ path('vendor_edit', {'id': vendor.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                        <form action="{{ path('vendor_delete', {'id': vendor.id}) }}" method="post" style="display:inline;">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                        </form>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="4">Aucun fournisseur trouvé.</td>
-                </tr>
-            {% endfor %}
+        {% for vendor in vendors %}
+            <tr>
+                <td>{{ vendor.id }}</td>
+                <td>{{ vendor.name }}</td>
+                <td>{{ vendor.serviceType }}</td>
+                <td>{{ vendor.cost }}</td>
+                <td>
+                    <a href="{{ path('app_vendor_show', {'id': vendor.id}) }}">show</a>
+                    <a href="{{ path('app_vendor_edit', {'id': vendor.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('vendor_create') }}" class="btn btn-primary">Ajouter un Fournisseur</a>
+    <a href="{{ path('app_vendor_new') }}">Create new</a>
 {% endblock %}

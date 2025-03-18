@@ -1,10 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <h1>Modifier le Fournisseur</h1>
+{% block title %}Edit Vendor{% endblock %}
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
-    {{ form_end(form) }}
+{% block body %}
+    <h1>Edit Vendor</h1>
+
+    {{ include('vendor/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_vendor_index') }}">back to list</a>
+
+    {{ include('vendor/_delete_form.html.twig') }}
 {% endblock %}
