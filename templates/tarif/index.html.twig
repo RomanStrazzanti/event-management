@@ -1,39 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tarif index{% endblock %}
+{% block title %}Liste des Tarifs{% endblock %}
 
 {% block body %}
-    <h1>Tarif index</h1>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Liste des Tarifs</h1>
+        <a href="{{ path('app_tarif_new') }}" class="btn btn-success">
+            <i class="bi bi-plus-lg"></i> Ajouter un Tarif
+        </a>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Amount</th>
-                <th>Description</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for tarif in tarifs %}
-            <tr>
-                <td>{{ tarif.id }}</td>
-                <td>{{ tarif.name }}</td>
-                <td>{{ tarif.amount }}</td>
-                <td>{{ tarif.description }}</td>
-                <td>
-                    <a href="{{ path('app_tarif_show', {'id': tarif.id}) }}">show</a>
-                    <a href="{{ path('app_tarif_edit', {'id': tarif.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_tarif_new') }}">Create new</a>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Nom</th>
+                            <th>Montant (€)</th>
+                            <th>Description</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tarif in tarifs %}
+                            <tr>
+                                <td>{{ tarif.id }}</td>
+                                <td>{{ tarif.name }}</td>
+                                <td>{{ tarif.amount | number_format(2, ',', ' ') }} €</td>
+                                <td>{{ tarif.description }}</td>
+                                <td class="text-center">
+                                    <a href="{{ path('app_tarif_show', {'id': tarif.id}) }}" class="btn btn-info btn-sm">
+                                        <i class="bi bi-eye"></i> Voir
+                                    </a>
+                                    <a href="{{ path('app_tarif_edit', {'id': tarif.id}) }}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil"></i> Modifier
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    <i class="bi bi-exclamation-circle"></i> Aucun tarif trouvé
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
