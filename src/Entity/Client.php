@@ -1,26 +1,38 @@
 <?php
-// src/Entity/Client.php
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\ClientRepository;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
+#[ORM\Table(name: "clients")]
 class Client
 {
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private $name;
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private $email;
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $email = null;
 
-    #[ORM\Column(type: "string", length: 20)]
-    private $phone;
+    #[ORM\Column(length: 20)]
+    private ?string $phone = null;
 
-    // Getters and Setters
+    #[ORM\OneToMany(mappedBy: "client", targetEntity: Event::class, orphanRemoval: true)]
+    private Collection $events;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -57,5 +69,10 @@ class Client
     {
         $this->phone = $phone;
         return $this;
+    }
+
+    public function getEvents(): Collection
+    {
+        return $this->events;
     }
 }

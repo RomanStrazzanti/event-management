@@ -9,10 +9,11 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>EventName</th>
+                <th>Name</th>
                 <th>Date</th>
                 <th>Location</th>
-                <th>Budget</th>
+                <th>Type</th>
+                <th>TotalPrice</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -20,10 +21,11 @@
         {% for event in events %}
             <tr>
                 <td>{{ event.id }}</td>
-                <td>{{ event.eventName }}</td>
-                <td>{{ event.date ? event.date|date('Y-m-d') : '' }}</td>
+                <td>{{ event.name }}</td>
+                <td>{{ event.date ? event.date|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ event.location }}</td>
-                <td>{{ event.budget }}</td>
+                <td>{{ event.type }}</td>
+                <td>{{ event.totalPrice }}</td>
                 <td>
                     <a href="{{ path('app_event_show', {'id': event.id}) }}">show</a>
                     <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
@@ -31,7 +33,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="7">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

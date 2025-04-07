@@ -21,95 +21,98 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-warning text-white p-3">
-                <h4>Factures</h4>
-                <h2>{{ invoice_count }}</h2>
+            <div class="card bg-info text-white p-3">
+                <h4>CA Annuel</h4>
+                <h2>{{ year_revenue }} €</h2>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card bg-danger text-white p-3">
-                <h4>Tâches</h4>
-                <h2>{{ task_count }}</h2>
+            <div class="card bg-warning text-white p-3">
+                <h4>CA Mensuel</h4>
+                <h2>{{ month_revenue }} €</h2>
             </div>
         </div>
     </div>
 
-    <!-- Graphiques -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <canvas id="chartClients"></canvas>
-        </div>
-        <div class="col-md-6">
-            <canvas id="chartInvoices"></canvas>
+    <!-- Section Clients -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h3>Liste des Clients</h3>
+            <a href="{{ path('app_client_new') }}" class="btn btn-primary mb-3">
+                <i class="bi bi-person-plus"></i> Ajouter un client
+            </a>
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                        <tr>
+                            <td>{{ client.id }}</td>
+                            <td>{{ client.name }}</td>
+                            <td>{{ client.email }}</td>
+                            <td>
+                                <a href="{{ path('app_client_edit', {'id': client.id}) }}" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                                <form action="{{ path('app_client_delete', {'id': client.id}) }}" method="post" class="d-inline" 
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Calendrier -->
-    <div class="row mt-4">
+    <!-- Calendrier des événements -->
+    <div class="row mt-5">
         <div class="col-md-12">
+            <h3>Calendrier des Événements</h3>
             <div id="calendar"></div>
         </div>
     </div>
 
-    <!-- Derniers ajouts -->
+    <!-- Liste des derniers événements -->
     <div class="row mt-4">
-        <div class="col-md-6">
-            <h3>Derniers Clients</h3>
-            <ul class="list-group">
-                {% for client in recent_clients %}
-                    <li class="list-group-item">{{ client.name }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h3>Derniers Événements</h3>
             <ul class="list-group">
                 {% for event in recent_events %}
-                    <li class="list-group-item">{{ event.eventName }} - {{ event.date|date('d/m/Y') }}</li>
+                    <li class="list-group-item">
+                        <a href="{{ path('app_event_edit', {'id': event.id}) }}">
+                            {{ event.name }} - {{ event.date|date('d/m/Y') }}
+                        </a>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Scripts pour le calendrier -->
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Configuration des graphiques
-        new Chart(document.getElementById('chartClients'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Clients actifs', 'Clients inactifs'],
-                datasets: [{
-                    data: [{{ client_count }}, 10], // Remplace 10 par le nombre réel
-                    backgroundColor: ['#4CAF50', '#FFC107']
-                }]
-            }
-        });
-
-        new Chart(document.getElementById('chartInvoices'), {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai'],
-                datasets: [{
-                    label: 'Factures émises',
-                    data: [5, 10, 3, 8, 12], // Remplace avec des données réelles
-                    backgroundColor: '#FF5733'
-                }]
-            }
-        });
-
-        // Configuration du calendrier
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             events: [
                 {% for event in recent_events %}
                 {
-                    title: '{{ event.eventName }}',
-                    start: '{{ event.date|date('Y-m-d') }}'
+                    title: '{{ event.name|escape('js') }}',
+                    start: '{{ event.date|date('Y-m-d') }}',
+                    url: '{{ path('app_event_edit', {'id': event.id}) }}'
                 },
                 {% endfor %}
             ]

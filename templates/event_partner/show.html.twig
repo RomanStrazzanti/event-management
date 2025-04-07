@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}EventPartner{% endblock %}
+
+{% block body %}
+    <h1>EventPartner</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ event_partner.id }}</td>
+            </tr>
+            <tr>
+                <th>AmountPaid</th>
+                <td>{{ event_partner.amountPaid }}</td>
+            </tr>
+            <tr>
+                <th>PaymentDate</th>
+                <td>{{ event_partner.paymentDate ? event_partner.paymentDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Notes</th>
+                <td>{{ event_partner.notes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_event_partner_index') }}">back to list</a>
+
+    <a href="{{ path('app_event_partner_edit', {'id': event_partner.id}) }}">edit</a>
+
+    {{ include('event_partner/_delete_form.html.twig') }}
+{% endblock %}

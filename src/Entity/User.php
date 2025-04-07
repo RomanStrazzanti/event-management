@@ -27,14 +27,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Tarif::class, cascade: ['persist', 'remove'])]
-    private Collection $tarifs;
-
-    public function __construct()
-    {
-        $this->tarifs = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -83,31 +75,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-    }
-
-    public function getTarifs(): Collection
-    {
-        return $this->tarifs;
-    }
-
-    public function addTarif(Tarif $tarif): self
-    {
-        if (!$this->tarifs->contains($tarif)) {
-            $this->tarifs[] = $tarif;
-            $tarif->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTarif(Tarif $tarif): self
-    {
-        if ($this->tarifs->removeElement($tarif)) {
-            if ($tarif->getUser() === $this) {
-                $tarif->setUser(null);
-            }
-        }
-
-        return $this;
     }
 }

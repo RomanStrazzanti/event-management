@@ -1,33 +1,48 @@
 <?php
-// src/Entity/Event.php
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use App\Repository\EventRepository;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
+#[ORM\Table(name: "events")]
 class Event
 {
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: "integer")]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Client::class)]
+    #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: "events")]
     #[ORM\JoinColumn(nullable: false)]
-    private $client;
+    private ?Client $client = null;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private $eventName;
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
-    #[ORM\Column(type: "date")]
-    private $date;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private $location;
+    #[ORM\Column(length: 255)]
+    private ?string $location = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $type = null;
 
     #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    private $budget;
+    private ?float $totalPrice = null;
 
-    // Getters and Setters
+    #[ORM\OneToMany(mappedBy: "event", targetEntity: EventPartner::class, orphanRemoval: true)]
+    private Collection $eventPartners;
+
+    public function __construct()
+    {
+        $this->eventPartners = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,14 +59,14 @@ class Event
         return $this;
     }
 
-    public function getEventName(): ?string
+    public function getName(): ?string
     {
-        return $this->eventName;
+        return $this->name;
     }
 
-    public function setEventName(string $eventName): self
+    public function setName(string $name): self
     {
-        $this->eventName = $eventName;
+        $this->name = $name;
         return $this;
     }
 
@@ -77,14 +92,25 @@ class Event
         return $this;
     }
 
-    public function getBudget(): ?string
+    public function getType(): ?string
     {
-        return $this->budget;
+        return $this->type;
     }
 
-    public function setBudget(string $budget): self
+    public function setType(string $type): self
     {
-        $this->budget = $budget;
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(float $totalPrice): self
+    {
+        $this->totalPrice = $totalPrice;
         return $this;
     }
 }

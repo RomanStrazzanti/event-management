@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}EventPartner index{% endblock %}
+
+{% block body %}
+    <h1>EventPartner index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>AmountPaid</th>
+                <th>PaymentDate</th>
+                <th>Notes</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event_partner in event_partners %}
+            <tr>
+                <td>{{ event_partner.id }}</td>
+                <td>{{ event_partner.amountPaid }}</td>
+                <td>{{ event_partner.paymentDate ? event_partner.paymentDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ event_partner.notes }}</td>
+                <td>
+                    <a href="{{ path('app_event_partner_show', {'id': event_partner.id}) }}">show</a>
+                    <a href="{{ path('app_event_partner_edit', {'id': event_partner.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_event_partner_new') }}">Create new</a>
+{% endblock %}

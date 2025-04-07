@@ -14,12 +14,20 @@ class EventType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('eventName')
+            ->add('name')
             ->add('date', null, [
                 'widget' => 'single_text',
             ])
             ->add('location')
-            ->add('budget')
+            ->add('type')
+            ->add('totalPrice', NumberType::class, [
+                'scale' => 2,
+                'html5' => true,
+                'attr' => [
+                    'step' => '0.01',
+                    'min' => 0,
+                ],
+            ])
             ->add('client', EntityType::class, [
                 'class' => Client::class,
                 'choice_label' => 'id',
