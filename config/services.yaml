@@ -18,8 +18,8 @@ services:
     App\Controller\SecurityController:
         arguments:
             $jwtManager: '@Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface'
-            $passwordHasher: '@Symfony\Component\PasswordHasher\Hasher\PasswordHasherInterface'
+            $passwordHasher: '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
 
-    Symfony\Component\PasswordHasher\Hasher\PasswordHasherInterface: '@Symfony\Component\PasswordHasher\Hasher\NativePasswordHasher'
+
     
     # Add other explicit service definitions as needed
