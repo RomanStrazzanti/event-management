@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EventPartnerRepository;
 
 #[ORM\Entity(repositoryClass: EventPartnerRepository::class)]
+#[ORM\Table(name: "event_partners")]
 class EventPartner
 {
     #[ORM\Id]
@@ -69,6 +70,10 @@ class EventPartner
     public function setForfait(?Forfait $forfait): self
     {
         $this->forfait = $forfait;
+        if ($forfait) {
+            // Calculer le montant payé en fonction du prix du forfait
+            $this->calculateAmountPaid($forfait);
+        }
         return $this;
     }
 
@@ -103,5 +108,15 @@ class EventPartner
     {
         $this->notes = $notes;
         return $this;
+    }
+    
+    private function calculateAmountPaid(Forfait $forfait): void
+    {
+        // Récupère le prix du forfait
+        $price = (float) $forfait->getPrice();
+        
+        // Applique une marge de 15% (modifiable selon ton besoin)
+        $marginRate = 0.15; 
+        $this->amountPaid = round($price * (1 + $marginRate), 2);
     }
 }

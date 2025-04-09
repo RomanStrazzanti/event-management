@@ -3,7 +3,7 @@
 {% block title %}Event{% endblock %}
 
 {% block body %}
-    <h1>Event</h1>
+    <h1>Event: {{ event.name }}</h1>
 
     <table class="table">
         <tbody>
@@ -34,9 +34,63 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_event_index') }}">back to list</a>
+    <h2>Partners and Forfaits</h2>
+    
+    <div class="row">
+        {% for eventPartner in event.eventPartners %}
+            <div class="col-12 col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Partner: {{ eventPartner.partner.name }}</h5>
+                        <p class="card-text">Forfait: {{ eventPartner.forfait.name }}</p>
+                        <p class="card-text">Amount Paid: {{ eventPartner.amountPaid }} €</p>
+                        <p class="card-text">Payment Date: {{ eventPartner.paymentDate ? eventPartner.paymentDate|date('Y-m-d') : 'N/A' }}</p>
+                        <p class="card-text">Notes: {{ eventPartner.notes ?: 'No notes' }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <p>No partners associated with this event.</p>
+            </div>
+        {% endfor %}
+    </div>
 
-    <a href="{{ path('app_event_edit', {'id': event.id}) }}">edit</a>
+    <h3>Select Partners and Forfaits to Add</h3>
+    
+    <form method="POST" action="{{ path('app_event_partner_new', {'eventId': event.id}) }}">
+        {% csrf_token %}
+        <div class="row">
+            {% for partner in all_partners %}
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ partner.name }}</h5>
+                            <p class="card-text">Partner ID: {{ partner.id }}</p>
+                            <button type="submit" name="partner_id" value="{{ partner.id }}" class="btn btn-primary">Associate</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h4>Select Forfait</h4>
+        <div class="row">
+            {% for forfait in all_forfaits %}
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ forfait.name }}</h5>
+                            <button type="submit" name="forfait_id" value="{{ forfait.id }}" class="btn btn-primary">Associate</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </form>
+
+    <a href="{{ path('app_event_index') }}" class="btn btn-secondary mt-3">Back to list</a>
+    <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning mt-3">Edit Event</a>
 
     {{ include('event/_delete_form.html.twig') }}
 {% endblock %}
