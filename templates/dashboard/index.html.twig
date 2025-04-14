@@ -7,11 +7,10 @@
     <!-- Barre supérieure avec bouton de déconnexion -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">Tableau de bord</h1>
-        <form action="{{ path('app_logout') }}" method="post">
-            <button type="submit" class="btn btn-outline-danger">
-                <i class="bi bi-box-arrow-right"></i> Se déconnecter
-            </button>
-        </form>
+        <!-- Bouton de déconnexion -->
+        <button id="logout-button" class="btn btn-outline-danger">
+            <i class="bi bi-box-arrow-right"></i> Se déconnecter
+        </button>
     </div>
     
     <!-- Statistiques -->
@@ -128,13 +127,15 @@
         calendar.render();
     });
 
-    // Token JWT accessible côté client
-    {% if app.session.get('jwt_token') %}
-        const jwtToken = "{{ app.session.get('jwt_token')|e('js') }}";
-        console.log("Token JWT disponible :", jwtToken);
-
-        // Tu peux l'envoyer via fetch, axios, etc.
-    {% endif %}
+    // Gérer la déconnexion avec JWT
+    document.querySelector('#logout-button').addEventListener('click', function(e) {
+        e.preventDefault();
+        // Supprimer le token JWT du localStorage
+        localStorage.removeItem('jwt_token');
+        
+        // Rediriger vers la page de login
+        window.location.href = '/login';
+    });
 </script>
 
 {% endblock %}

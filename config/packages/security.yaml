@@ -23,22 +23,18 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-        # Authentification JWT pour les routes API
         api:
             pattern: ^/api
             stateless: true
             provider: app_user_provider
-            jwt: ~  # Utilise LexikJWTAuthenticationBundle
-            # Pas besoin de session, car JWT est stateless
+            jwt: ~
 
-        # Authentification via formulaire pour le site web
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\AppAuthentificatorAuthenticator
+            # entry_point: Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationEntryPoint
             logout:
                 path: app_logout
-
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
@@ -46,8 +42,6 @@ security:
                 always_remember_me: true
 
     access_control:
-        # Autoriser l'accès à /login à tout le monde (même sans être connecté)
+        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-
-        # Restreindre toutes les routes /api aux utilisateurs avec le rôle ADMIN
-        - { path: ^/api, roles: ROLE_ADMIN }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

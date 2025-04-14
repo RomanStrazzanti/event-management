@@ -15,10 +15,14 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Controller\SecurityController:
-        arguments:
-            $jwtManager: '@Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface'
-            $passwordHasher: '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    #App\Controller\SecurityController:
+    #    arguments:
+    #        $jwtManager: '@Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface'
+    #        $passwordHasher: '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
 
 
     
